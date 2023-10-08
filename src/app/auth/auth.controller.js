@@ -1,9 +1,10 @@
+const AuthRequest = require("./auth.request");
 
 class AuthController{
     registerUser(req, res, next){
         try{
-            let body = req.body;
-            console.log(body)
+            let mapped = (new AuthRequest(req)).transformRegisterData()
+            console.log(mapped)
         }catch(exception){
             next(exception);
         }
