@@ -4,10 +4,12 @@ const router = require("express").Router();
 const validateRequest = require("../../middlewares/validator.middleware");
 const authCtrl = require("./auth.controller");
 const { registerSchema } = require("./auth.validator");
+const uploader  = require("../../middlewares/uploader.middleware")
 
 
 
-router.post("/register", validateRequest(registerSchema), authCtrl.registerUser)
+
+router.post("/register",uploader.single('image'), validateRequest(registerSchema), authCtrl.registerUser)
 router.post("/activate/:token", authCtrl.activateUser)
 router.post("/login", (req, res, next) => {
 
