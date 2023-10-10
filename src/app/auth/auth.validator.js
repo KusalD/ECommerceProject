@@ -7,7 +7,15 @@ const registerSchema = z.object({
     address: z.string().nonempty(),
     phone: z.string().regex(/^(\+\d{1,3}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).nonempty()
 })
+const activateSchema = z.object({
+    password: z.string().min(8).regex(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,15})/),
+    confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+});
 
 module.exports = {
     registerSchema,
+    activateSchema
 }
