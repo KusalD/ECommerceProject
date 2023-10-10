@@ -7,6 +7,11 @@ const registerSchema = z.object({
     address: z.string().nonempty(),
     phone: z.string().regex(/^(\+\d{1,3}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).nonempty()
 })
+
+const loginSchema = z.object({
+    email: z.string().email().nonempty(),
+    password: z.string().nonempty(),
+})
 const activateSchema = z.object({
     password: z.string().min(8).regex(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,15})/),
     confirmPassword: z.string()
@@ -17,5 +22,6 @@ const activateSchema = z.object({
 
 module.exports = {
     registerSchema,
-    activateSchema
+    activateSchema,
+    loginSchema
 }

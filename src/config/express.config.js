@@ -23,7 +23,6 @@ app.use((error, req, res, next) => {
     //error
     let code = error.code ?? 500;
     let msg = error.message ?? "Internal server error"
-
     if(error instanceof ZodError){
         //validation exception
         let errorMsg = {};
@@ -33,7 +32,6 @@ app.use((error, req, res, next) => {
         code = 400;
         msg = errorMsg
     }
-
     res.status(code).json({
         result: null,
         msg: msg,
