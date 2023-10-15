@@ -1,7 +1,8 @@
 const dotenv = require("dotenv")
 dotenv.config()
 const nodemailer = require("nodemailer")
-class MailService{
+
+class MailService {
     transporter;
     constructor(){
         try{
@@ -10,36 +11,36 @@ class MailService{
                 port: process.env.SMTP_PORT,
                 auth: {
                     user: process.env.SMTP_USER,
-                    pass: process.env.SMTP_PASSWORD,
+                    pass: process.env.SMTP_PWD,
                 },
             })
-        } catch(exception) {
-            console.log(exception)
-            // throw new Error("Error connection...")
-            throw{code: 500, msg: "Error connecting SMTP server"}
         }
+            catch(exception){
+                console.log(exception);
+                throw{code: 500, msg:"Error connecting SMTP....."}
+            }
     }
-    sendEmail = async (to, sub, msg) => {
+    sendEmail = async (to, sub, msg) =>{
         try{
             let response = await this.transporter.sendMail({
-                to: to,
-                from: process.env.SMTP_FROM_ADDR,
-                sub: sub,
+                to :to,
+                from: process.env.SMTP_ADDR,
+                subject: sub,
                 html: msg,
                 text: msg
             })
-            if (response) {
-                return true
-            } else {
-                return false;
+            if (response){
+                return true;
             }
         }catch(exception){
             console.log(exception);
-            throw{code:500, msg: "Error sending Email"}
+            throw{code: 500, msg: "Error sending email"}
         }
     }
 }
 
+const mailSvc = new MailService()
+module.exports = mailSvc;
 /* For sending mail wit sendgrid
             let mapped = (new AuthRequest(req)).transformRegisterData()
             sgMail.setApiKey(process.env.SMTP_SGKEY)
@@ -66,6 +67,3 @@ class MailService{
                 })
             
 */
-
-const mailSvc = new MailService()
-module.exports = mailSvc;

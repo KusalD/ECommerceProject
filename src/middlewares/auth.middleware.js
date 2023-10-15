@@ -1,38 +1,54 @@
 const dotenv = require("dotenv")
 dotenv.config()
+const jwt = require('jsonwebtoken');
+const authSvc = require("../app/auth/auth.service");
 
-const jwt = require('jsonwebtoken')
-const checkLogin = (req, res, next) => {
-    try{
+const checkLogin = async (req, res, next) => {
+    try {
+        // token 
         let token = null;
 
-        if(req.query['token']){
+        if(req.query['token']) {
             token = req.query['token']
         }
-
+        
         if(req.headers['authorization']){
-            token = req.headers.authorization
+            token = req.headers['authorization']
         }
 
         if(!token){
-            //not authorized
-            next({code: 401, message: "token not set"})
-        } else{
+            // not authorized 
+            next({code: 401, message: "Token not set"})
+        } else {
+            // token        => " " => []
+            // Bearer token    => ["Bearer"]
             token = (token.split(" ")).pop()
-            if(!token){
+            
+            if(!token) {
                 next({code: 401, message: "Token is empty or not set"})
-            } else{
+            } else {
+                // validate 
+                // 
                 const data = jwt.verify(token, process.env.JWT_SECRET)
-                if(!data.hasOwnProperty('id')){
+                // id 
+                if(!data.hasOwnProperty('id')) {
                     next({code: 401, message: "Invalid token"})
-                } else{
-                    req.authUser = {}
+                } else {
+                    let userDetail =await authSvc.getUserByFilter({
+                        _id: data.id
+                    })
+                    if(userDetail.length !== 1){
+                        next({code: 401, message: "User Does not exists anymore"})
+                    }
+                    req.authUser = userDetail[0]
                     next()
                 }
             }
         }
-    } catch(exception){
-        console.log(exception)
+        
+    } catch(exception) {
+        // jwt exce
+        console.log({exception})
         next(exception)
     }
 }

@@ -16,9 +16,9 @@ const UserSchema = new mongoose.Schema({
         type: String,
         require: true,
         enum: ['admin', 'seller', 'customer'],
-        default: "customer"
+        default: 'customer',
     },
-    address: {
+    address:{
         type: String,
         require: true
     },
@@ -30,18 +30,18 @@ const UserSchema = new mongoose.Schema({
         default: 'inactive'
     },
     image: {
-        tyype: String,
+        type: String,
         require: true
     },
     token: String,
-    forgettoken: String,
+    forgetToken: String,
     validateTill: Date
-    
 }, {
+    timestamps: true,
     autoIndex: true,
     autoCreate: true,
-    collection
 })
 
 const UserModel = mongoose.model("User", UserSchema)
+
 module.exports = UserModel;
