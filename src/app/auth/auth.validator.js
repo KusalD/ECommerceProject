@@ -1,7 +1,7 @@
 const {z} = require("zod")
 
 const registerSchema = z.object({
-    name: z.string().regex(/^[^0-9][a-zA-Z]+$/).max(50).min(2).nonempty(),
+    name: z.string().regex(/^[^0-9][a-zA-Z0-9\s]+$/).max(50).min(2).nonempty(),
     email: z.string().email().nonempty(),
     role: z.string().regex(/admin|customer|seller/).nonempty(),
     address: z.string().nonempty(),

@@ -1,8 +1,11 @@
 const express = require("express")
 const app = express();
 
+require("./mongodb.config");
+
 const routes = require('../routes');
 const { ZodEffects, ZodError } = require("zod");
+const { JsonWebTokenError, TokenExpiredError } = require("jsonwebtoken");
 
 
 
@@ -30,7 +33,11 @@ app.use((error, req, res, next) => {
             errorMsg[errorObj.path[0]] = errorObj.message
         })
         code = 400;
-        msg = errorMsg
+        msg = errorMsg;
+    }
+    if (error instanceof JsonWebTokenError || error instanceof TokenExpiredError ){
+        code= 401;
+        msg = error.message
     }
     res.status(code).json({
         result: null,
