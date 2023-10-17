@@ -31,7 +31,7 @@ class AuthController{
             //     "Activate your account!!",
             //     `<b>Dear, ${mapped.name}</b>
             //     <p>Your account has been registered successfully. </p>
-            //     <p>Please click the link below or copy the url to activate you r account: </P>
+            //     <p>Please click the link below or copy the url to activate your account: </P>
             //     <p> <a href = "${process.env.FRONTEND_URL}/activate/${mapped.token}>http://localhost:5173/activate/${mapped.token}</p>
             //     <p>Thank you</p>
             //     <p>Regards</P>`
@@ -42,41 +42,6 @@ class AuthController{
                 msg: "User Registered",
                 meta: null
             })
-        /*
-        // let errorBag = {}
-        // if (body.name ===null || body.name ===''){
-        //     errorBag['name'] = "Name is required"
-        // } else if (body.name.length > 30){
-        //     errorBag['name'] = "Name should be of 30 characters only."
-        // }
-        // if (body.email ===null || body.email ===''){
-        //     errorBag['email'] = "Email is required"
-        // }
-        // if (body.role ===null || body.role ===''){
-        //     errorBag['role'] = "Role is required"
-        // }
-    
-        // if((Object.keys(errorBag)).length > 0){
-        //     res.status(400).json({
-        //         msg: "Validation failure",
-        //         result: errorBag,
-        //         meta: null
-        //     })
-        // }
-    
-    
-    
-            // if (body.name !== null && body.email !== null && body.role !== null){
-            //     res.status(400).json({
-            //         result: body,
-            //         message: "name or email, or role should not be empty",
-            //         meta: null
-            //     })
-            // }
-            // console.log(body)
-            */
-            // let validated = registerSchema.parse(body)
-            // console.log(validated)
         }
         catch(exception){
             next(exception);
