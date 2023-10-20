@@ -29,7 +29,6 @@ class BannerService {
 
     listAllBanner = async (filter = {}, paging = {skip: 0, limit: 10})=>{
         try{
-            console.log(filter)
             let banners = await BannerModel.find(filter)
                 .populate("createdBy", ["_id, name"])
                 .sort({_id: "DESC"})
@@ -58,6 +57,29 @@ class BannerService {
             })
             return response;
         }catch(excepiton){
+            throw excepiton
+        }
+    }
+
+    deleteBannerByid = async(id) => {
+        try{
+            let response = await BannerModel.findByIdAndDelete(id);
+            return response;
+        }catch(excepiton){
+            throw excepiton
+        }
+    }
+
+    getBannerForHome = async(limit) => {
+        try{
+            let data = await BannerModel.find({
+                status: "active"
+            })
+            .sort({"position" : "ASC"})
+            .limit(limit)
+            return data;
+            retun
+        } catch(excepiton){
             throw excepiton
         }
     }

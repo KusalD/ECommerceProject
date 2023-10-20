@@ -1,3 +1,4 @@
+const { deleteFile } = require("../../helpers/helpers");
 const bannerSvc = require ("./banner.service")
 
 class BannerController{
@@ -83,6 +84,10 @@ class BannerController{
 
             let oldBanner = await this.bannerSvc.updataBannerById(data, bannerDetail._id)
             
+            if(oldBanner.image !== data.image){
+                deleteFile('./public/uploads' + oldBanner.image)
+            }
+            
             res.json({
                 result: oldBanner,
                 message: "Banner Updated Successfully",
@@ -92,11 +97,37 @@ class BannerController{
             next (exception)
         }
     }
+
     deleteBannerById = async(req, res, next) =>{
-        
+        try{
+            let oldData = await this.bannerSvc.deleteBannerByid(req.params.id)
+            if(oldData){
+
+                deleteFile("./public/uploads" + oldData.image)
+                res.json({
+                    result: oldData,
+                    message: "Banner deleted successfully",
+                    meta: null
+                })
+            }else{
+                next({code: 404, message: "Banner does not exists."})
+            }
+        }catch(exception){
+            next(exception)
+        }
     }
     getlistForHome = async(req, res, next) =>{
-
+        try{
+            let limit = Number(req.params.limit) ?? 10
+            let data = await this.bannerSvc.getBannerForHome(limit)
+            res.json({
+                resultL: data,
+                message: "Banner fetched",
+                meta: null
+            })
+        } catch (exception){
+            next(exception);
+        }
     }
 }
 // const bannerCtrl = new BannerController
