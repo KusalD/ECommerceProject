@@ -19,7 +19,7 @@ const BannerSchema = new mongoose.Schema({
         require: true
     },
     position: {
-        type: String,
+        type: Number,
         default: 0
     },
     createdBy: {

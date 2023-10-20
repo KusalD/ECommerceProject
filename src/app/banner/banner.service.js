@@ -1,14 +1,14 @@
 const BannerModel = require("./banner.model");
 
 class BannerService {
-    transformBannerCreateData(request){
+    transformBannerCreateData(request, isEdit = false){
         let banner = {
             ...request.body,
             createdBy: request.authUser._id
         }
-        if(!request.file){
+        if(!request.file && isEdit === false){
             throw{code: 400, message: "Validation Failure", result: {image: "image is require"}}
-        }else{
+        }else if(request.file) { 
             banner['image'] = request.file.filename;
         }
         return banner;
@@ -29,15 +29,37 @@ class BannerService {
 
     listAllBanner = async (filter = {}, paging = {skip: 0, limit: 10})=>{
         try{
-            let banner = await BannerModel.find(filter)
-                .populate("createdBy")
+            console.log(filter)
+            let banners = await BannerModel.find(filter)
+                .populate("createdBy", ["_id, name"])
                 .sort({_id: "DESC"})
                 .skip(paging.skip)
                 .limit(paging.limit)
+            return banners;
         } catch(exception){
             throw exception;
         }
     }
-}
 
-module.exports = BannerService;
+    getBannerById = async(id) => {
+        try {
+            let banner = await BannerModel.findById(id)
+                .populate("createdBy", ["_id, name"])
+            return banner
+        } catch(excepiton){
+            throw(excepiton)
+        }
+    }
+
+    updataBannerById = async(data, id) =>{
+        try{ 
+            let response = await BannerModel.findByIdAndUpdate(id, {
+                $set: data
+            })
+            return response;
+        }catch(excepiton){
+            throw excepiton
+        }
+    }
+}
+module.exports = new BannerService()
