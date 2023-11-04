@@ -1,27 +1,31 @@
-const { default: slugify } = require("slugify");
 const BrandModel = require("./brand.model");
-const slugufy = require("slugify")
+const slugify = require("slugify")
+
+
 class BrandService {
-    transformBrandCreateData(request, isEdit = false){
+    transformBrandCreateData(request, isEdit=false){
         let brand = {
             ...request.body,
             createdBy: request.authUser._id
         }
+
         if(!request.file && isEdit === false){
-            throw{code: 400, message: "Validation Failure", result: {image: "image is require"}}
-        }else if(request.file) { 
+            throw{code: 400, message:"Validation Failure", result: {image: "Image is require"}}
+        } else if(request.file){
             brand['image'] = request.file.filename;
         }
 
         if(!isEdit){
             brand['slug'] = slugify(brand.title, {
+                replacement: "-",
                 lower: true,
                 trim: true
             })
         }
+
         return brand;
     }
-
+    
     createBrand = async (data) => {
         try{
             let brand = new BrandModel(data)
@@ -31,65 +35,73 @@ class BrandService {
         }
     }
 
-    totalCount = async(filter ={}) => {
+    totalCount = async(filter = {}) =>{
         return BrandModel.countDocuments(filter)
     }
 
-    listAllBrand = async (filter = {}, paging = {skip: 0, limit: 10})=>{
+    listAllBrand = async(filter = {}, paging = {skip: 0, limit: 10}) => {
         try{
-            let brands = await BrandModel.find(filter)
-                .populate("createdBy", ["_id, name"])
+            let brand = await BrandModel.find(filter)
+                .populate("createdBy", ['_id', 'name'])
                 .sort({_id: "DESC"})
                 .skip(paging.skip)
                 .limit(paging.limit)
-            return brands;
-        } catch(exception){
+            return brand;
+        }catch(exception) {
             throw exception;
         }
     }
 
-    getBrandById = async(id) => {
-        try {
-            let brand = await BrandModel.findById(id)
-                .populate("createdBy", ["_id, name"])
+    getBrandByID = async(id) => {
+        try{
+            let brand = await BrandModel.findById(id);
             return brand
-        } catch(excepiton){
-            throw(excepiton)
+        }catch(exception){
+            throw exception
+        }
+    }
+    getBrandBySlug = async(slug) => {
+        try{
+            let brand = await BrandModel.findOne({
+                slug: slug
+            });
+            return brand
+        }catch(exception){
+            throw exception
         }
     }
 
-    updataBrandById = async(data, id) =>{
-        try{ 
+    updateBrandById = async(data, id) =>{
+        try{
             let response = await BrandModel.findByIdAndUpdate(id, {
                 $set: data
             })
             return response;
-        }catch(excepiton){
-            throw excepiton
+        } catch (exception) {
+            throw exception;
         }
     }
 
-    deleteBrandByid = async(id) => {
+    deleteBrandsById = async(id) =>{
         try{
-            let response = await BrandModel.findByIdAndDelete(id);
-            return response;
-        }catch(excepiton){
-            throw excepiton
+            let response = await BrandModel.findByIdAndDelete(id)
+            return response
+        }catch(exception){
+            throw(exception);
         }
     }
-
-    getBrandForHome = async(limit) => {
+    getBrandForHome = async(limit) =>{
         try{
             let data = await BrandModel.find({
                 status: "active"
             })
-            .sort({"position" : "ASC"})
-            .limit(limit)
-            return data;
-            retun
-        } catch(excepiton){
-            throw excepiton
+            .sort({"position": "ASC"})
+            .limit(limit);
+            return (data);
+        }catch(exception){
+            next(exception)
         }
     }
 }
+
 module.exports = new BrandService()

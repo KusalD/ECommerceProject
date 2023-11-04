@@ -7,19 +7,23 @@ const router = require("express").Router()
 
 const BrandController = require("./brand.controller");
 const brandService = require("./brand.service");
+const productSvc = require("../product/product.service");
 
-const brandCtrl = new BrandController(brandService);
+const brandCtrl = new BrandController(brandService, productSvc);
 
 const { BrandCreateSchema, BrandUpdateSchema } = require("./brand.validator");
 
-router.get("/home-list", brandCtrl.getlistForHome)
+
+router.get("/home-list", brandCtrl.getListForHome)
+router.get("/:slug/slug", brandCtrl.getBrandBySlug)
 
 router.route("/")
     .get(checkLogin, checkPermission('admin'), brandCtrl.listAllBrands)
-    .post(checkLogin, checkPermission('admin'),uploader.single('image'), validateRequest(BrandCreateSchema), brandCtrl.storeBrand)
+    .post(checkLogin, checkPermission('admin'), uploader.single('image'), validateRequest(BrandCreateSchema), brandCtrl.storeBrand)
 router.route("/:id")
-    .get(checkLogin, checkPermission('admin'), brandCtrl.detailBrandById)
+    .get(checkLogin, checkPermission('admin'), brandCtrl.detailBrandByID)
     .put(checkLogin, checkPermission('admin'), uploader.single('image'), validateRequest(BrandUpdateSchema), brandCtrl.updateBrand)
     .delete(checkLogin, checkPermission('admin'), brandCtrl.deleteBrandById)
+
 
 module.exports = router;

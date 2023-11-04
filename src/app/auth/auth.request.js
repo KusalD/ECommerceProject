@@ -14,9 +14,12 @@ class AuthRequest{
         this.#data.body.status  = "inactive";
         return this.#data.body;
     }
+    transformUpdateData(){
+        if(this.#data.file){
+            this.#data.body.image  =this.#data.file.filename
+        }
+        return this.#data.body;
+    }
 }
-
-
-
 
 module.exports  =AuthRequest;

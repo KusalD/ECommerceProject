@@ -39,8 +39,18 @@ app.use((error,req, res, next) =>{
         code = 401;
         msg = error.message
     }
+
+
+    let result = null
+    if(error.code === 11000){
+        code = 422;
+        const keys = Object.keys(error.keyPattern);
+        result = keys.map((key) => ({[key]: key+ " should be unique"}))
+        msg = "Validation Failed"
+    }
+
     res.status(code).json({
-        result: null,
+        result: result,
         msg: msg,
         meta: null
     })

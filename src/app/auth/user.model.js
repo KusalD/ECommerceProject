@@ -2,46 +2,47 @@ const mongoose = require("mongoose")
 
 const UserSchema = new mongoose.Schema({
     name: {
-        type: String,
-        require: true,
+        type: String, 
+        required: true, 
         min: 2,
         max: 50
     },
     email: {
-        type: String,
-        require: true,
+        type: String, 
+        required: true, 
         unique: true
     },
     role: {
-        type: String,
-        require: true,
-        enum: ['admin', 'seller', 'customer'],
-        default: 'customer',
+        type: String, 
+        required: true, 
+        enum: ['admin','seller','customer'],
+        default: "customer"
     },
-    address:{
-        type: String,
-        require: true
+    address: {
+        type: String, 
+        required: true
     },
-    phone: String,
+    phone: String, 
     password: String,
     status: {
         type: String,
-        enum: ['inactive', 'active', 'other'],
-        default: 'inactive'
+        enum: ['inactive','active','other'],
+        default: "inactive"
     },
     image: {
-        type: String,
+        type: String, 
         require: true
     },
-    token: String,
-    forgetToken: String,
+    token: String, 
+    forgetToken: String, 
     validateTill: Date
 }, {
-    timestamps: true,
-    autoIndex: true,
-    autoCreate: true,
+    timestamps: true, 
+    autoIndex: true, 
+    autoCreate: true, 
+    // collection: "authUsers"
 })
 
+// users => authusers
 const UserModel = mongoose.model("User", UserSchema)
-
 module.exports = UserModel;

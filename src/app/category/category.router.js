@@ -1,10 +1,29 @@
+const checkLogin = require("../../middlewares/auth.middleware");
+const checkPermission = require("../../middlewares/rbac.middleware");
+const uploader = require("../../middlewares/uploader.middleware");
+const validateRequest = require("../../middlewares/validator.middleware");
+
 const router = require("express").Router()
-const categoryCtrl = require("./category.controller");
 
-router.get("/category", "category/list-home","categoyr/id", "category/:slug",categoryCtrl.getCategory)
-router.post("category", categoryCtrl.postCategory)
-router.put("/category/:id", categoryCtrl.putCategory)
-router.delete("/category/:id", categoryCtrl.deleteCategory)
+const CategoryController = require("./category.controller");
+const categoryService = require("./category.service");
+const productService = require("../product/product.service");
+
+const categoryCtrl = new CategoryController(categoryService, productService);
+
+const { CategoryCreateSchema, CategoryUpdateSchema } = require("./category.validator");
 
 
-module.exports = router
+router.get("/home-list", categoryCtrl.getListForHome)
+router.get("/:slug/slug", categoryCtrl.getCategorybySlug)
+
+router.route("/")
+    .get(checkLogin, checkPermission('admin'), categoryCtrl.listAllCategories)
+    .post(checkLogin, checkPermission('admin'), uploader.single('image'), validateRequest(CategoryCreateSchema), categoryCtrl.storeCategory)
+router.route("/:id")
+    .get(checkLogin, checkPermission('admin'), categoryCtrl.detailCategoryByID)
+    .put(checkLogin, checkPermission('admin'), uploader.single('image'), validateRequest(CategoryUpdateSchema), categoryCtrl.updateCategory)
+    .delete(checkLogin, checkPermission('admin'), categoryCtrl.deleteCategoryById)
+
+
+module.exports = router;

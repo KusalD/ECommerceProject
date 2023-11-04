@@ -23,7 +23,6 @@ router.post("/reset-password/:token",validateRequest(setPasswordSchema), authCtr
 
 
 router.get("/admin", checkLogin,checkPermission(['admin']), (req, res, next) =>{
-    res.send("I am admin control")
 })
 
 module.exports = router;

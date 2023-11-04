@@ -1,12 +1,12 @@
-const { deleteFile } = require("../../helpers/helpers");
-const bannerSvc = require ("./banner.service")
+const bannerSvc = require("./banner.service")
 
 class BannerController{
     bannerSvc;
     constructor(svc){
         this.bannerSvc = svc
     }
-    storeBanner = async(req, res, next)=>{
+
+    storeBanner = async(req, res, next) => {
         try{
             let data= this.bannerSvc.transformBannerCreateData(req)
             let createdBanner = await this.bannerSvc.createBanner(data)
@@ -15,11 +15,12 @@ class BannerController{
                 message: "Banner Created Successfully",
                 meta: null
             })
-        } catch(exception){
-            next (exception)
+        }catch(exception){
+            next(exception)
+            console.log(exception);
         }
     }
-    listAllBanners  = async(req, res, next)=>{
+    listAllBanners = async(req, res, next) => {
         try{
             let search = req.query.search ?? null
             let limit = 10;
@@ -27,15 +28,15 @@ class BannerController{
 
             let skip = (currentPage-1) * limit;
 
-            let filter = {}
+            let filter ={}
 
-            if(search){
+            if (search) {
                 filter = {
                     ...filter,
                     $or: [
                         {title: new RegExp(search, "i")},
                         {link: new RegExp(search, "i")},
-                        {staus: new RegExp(search, 'i')}
+                        {status: new RegExp(search, "i")}
                     ]
                 }
             }
@@ -44,91 +45,92 @@ class BannerController{
 
             res.json({
                 result: data,
-                message: "Banner fetched Successfully",
+                message: "Banner fetched successfully",
                 meta: {
                     total: count,
                     limit: limit,
-                    currrentPage: currentPage
+                    currentPage: currentPage
                 }
             })
-        } catch(exception){
+
+        }catch(exception){
             next(exception)
         }
     }
-
-    detailBannerById = async(req, res, next) => {
+    
+    detailBannerByID= async(req, res, next) => {
         try{
             let id = req.params.id
-            let bannerDetail = await this.bannerSvc.getBannerById(id)
+            let bannerDetail = await this.bannerSvc.getBannerByID(id)
             res.json({
                 result: bannerDetail,
-                message: "Banner detail fetchned",
+                message: "Banner Detail Fetched",
                 meta: null
+
             })
         }catch(exception){
             next(exception)
         }
     }
 
-    updateBanner = async(req, res, next) => {
+    updateBanner = async(req, res, next) =>{
         try{
-            let bannerDetail = await this.bannerSvc.getBannerById(req.params.id)
+            let bannerDetail = await this.bannerSvc.getBannerByID(req.params.id)
             if(!bannerDetail){
-                next({status: 404, message: "Banner does not exists"})
+                next({ status: 404, message: "Banner doesnot exists"})
             }
             let data= this.bannerSvc.transformBannerCreateData(req, true)
 
-            if(!data.image) {
+            if(!data.image){
                 data.image = bannerDetail.image
             }
+            let oldBanner = await this.bannerSvc.updateBannerById(data, bannerDetail._id)
 
-            let oldBanner = await this.bannerSvc.updataBannerById(data, bannerDetail._id)
-            
             if(oldBanner.image !== data.image){
-                deleteFile('./public/uploads' + oldBanner.image)
+                deleteFile('./public/uploads/'+oldBanner.image)
             }
-            
             res.json({
                 result: oldBanner,
                 message: "Banner Updated Successfully",
                 meta: null
             })
-        } catch(exception){
-            next (exception)
+        }catch(exception){
+            next(exception)
         }
     }
-
-    deleteBannerById = async(req, res, next) =>{
+    deleteBannerById = async (req, res, next)=>{
         try{
-            let oldData = await this.bannerSvc.deleteBannerByid(req.params.id)
+            let oldData = await this.bannerSvc.deleteBannerById(req.params.id)
             if(oldData){
-
-                deleteFile("./public/uploads" + oldData.image)
+                deleteFile("./public/uploads"+oldData.image)
                 res.json({
                     result: oldData,
                     message: "Banner deleted successfully",
                     meta: null
                 })
-            }else{
-                next({code: 404, message: "Banner does not exists."})
+
+            } else{
+                next({code: 404, message: "Banner doesnot exist"})
             }
         }catch(exception){
             next(exception)
         }
     }
-    getlistForHome = async(req, res, next) =>{
+    getListForHome= async(req, res, next)=>{
         try{
-            let limit = Number(req.params.limit) ?? 10
+            let limit = Number (req.params.limit) ?? 10
             let data = await this.bannerSvc.getBannerForHome(limit)
             res.json({
-                resultL: data,
+                result: data,
                 message: "Banner fetched",
                 meta: null
             })
-        } catch (exception){
-            next(exception);
+        }catch(exception){
+            next(exception)
         }
     }
+
 }
-// const bannerCtrl = new BannerController
+
+// const bannerCtrl = new BannerController();
 module.exports = BannerController;
