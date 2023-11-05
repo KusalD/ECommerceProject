@@ -45,6 +45,24 @@ class ProductService {
         product['afterDicount'] = product.price - product.price * product.discount/100;
         return product;
     }
+
+
+    increaseCount = async(productId)=>{
+        try{
+            let productId = req.params.id;
+            let productDetail = await this.getProductByID(productId)
+            let count = 1;
+            if(productDetail.viewCount){
+                count = +productDetail.viewCount + 1
+            }
+            let update = await this.updateProductById({
+                viewCount: count
+            }, productId)
+            return update;
+        }catch(exception){
+            throw exception;
+        }
+    }
     
     createProduct = async (data) => {
         try{

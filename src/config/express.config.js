@@ -26,10 +26,15 @@ app.use((error,req, res, next) =>{
     let msg = error.message ?? "Internal server error";
     
     if (error instanceof ZodError){
+
         //validation exception
         let errorMsg = {};
         error.errors.map((errorObj)=>{
-            errorMsg[errorObj.path[0]] = errorObj.message
+            if(errorObj.path.length){
+                errorMsg[errorObj.path[0]] = errorObj.message
+            } else{
+                errorMsg['cart'] = "Cart cannot be empty or null"
+            }
         })
         code = 400;
         msg = errorMsg;
