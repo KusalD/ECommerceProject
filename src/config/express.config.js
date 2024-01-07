@@ -1,5 +1,12 @@
 const express = require("express");
 const app = express();
+const cors = require('cors');
+
+app.use(cors({
+    origin: "http://localhost:5173"
+}))
+
+
 
 require("./mongodb.config");
 
@@ -17,22 +24,22 @@ app.use(express.urlencoded({
 
 app.use('/api/v1', routes)
 //404 handle
-app.use((req, res, next) =>{
-    next({code: 404, message: "Not found"})
+app.use((req, res, next) => {
+    next({ code: 404, message: "Not found" })
 })
 
-app.use((error,req, res, next) =>{
+app.use((error, req, res, next) => {
     let code = error.code ?? 500;
     let msg = error.message ?? "Internal server error";
-    
-    if (error instanceof ZodError){
+
+    if (error instanceof ZodError) {
 
         //validation exception
         let errorMsg = {};
-        error.errors.map((errorObj)=>{
-            if(errorObj.path.length){
+        error.errors.map((errorObj) => {
+            if (errorObj.path.length) {
                 errorMsg[errorObj.path[0]] = errorObj.message
-            } else{
+            } else {
                 errorMsg['cart'] = "Cart cannot be empty or null"
             }
         })
@@ -40,17 +47,17 @@ app.use((error,req, res, next) =>{
         msg = errorMsg;
     }
 
-    if (error instanceof JsonWebTokenError || error instanceof TokenExpiredError){
+    if (error instanceof JsonWebTokenError || error instanceof TokenExpiredError) {
         code = 401;
         msg = error.message
     }
 
 
     let result = null
-    if(error.code === 11000){
+    if (error.code === 11000) {
         code = 422;
         const keys = Object.keys(error.keyPattern);
-        result = keys.map((key) => ({[key]: key+ " should be unique"}))
+        result = keys.map((key) => ({ [key]: key + " should be unique" }))
         msg = "Validation Failed"
     }
 
